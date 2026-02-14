@@ -84,7 +84,7 @@ const App: React.FC = () => {
 
       {/* Footer - Lowered z-index to 10 to prevent covering the fixed submit button which is inside Main (z-20) */}
       <footer className="relative z-10 py-8 text-center text-gray-600 text-sm bg-[#050505]">
-        <p>&copy; {new Date().getFullYear()} HiPixel A/S Center. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} 하이픽셀플러스 All rights reserved.</p>
       </footer>
     </div>
   );
