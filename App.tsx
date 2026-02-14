@@ -42,7 +42,7 @@ const App: React.FC = () => {
           <img 
             src={bgImage}
             alt="Cinematic Background" 
-            className="w-full h-full object-cover scale-105 animate-[pulse-slow_10s_ease-in-out_infinite]"
+            className="w-full h-full object-cover scale-105 md:animate-[pulse-slow_10s_ease-in-out_infinite]"
           />
           {/* Overlays - Darkened for better text visibility */}
           <div className="absolute inset-0 bg-black/70" />
@@ -51,7 +51,7 @@ const App: React.FC = () => {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 text-center px-4 max-w-4xl mt-10 animate-fade-in-up">
+        <div className="relative z-10 text-center px-4 max-w-4xl mt-10 md:animate-fade-in-up">
            <span className="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-xs font-bold uppercase tracking-[0.2em] mb-8 backdrop-blur-md shadow-lg">
              Service Feedback
            </span>

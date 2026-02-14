@@ -14,7 +14,7 @@ export const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border border-indigo-500/30 rounded-xl p-6 mt-6 animate-pulse-slow">
+    <div className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border border-indigo-500/30 rounded-xl p-6 mt-6 md:animate-pulse-slow">
       <div className="flex items-center gap-3 mb-4">
         <Sparkles className="w-6 h-6 text-hipixel-accent" />
         <h3 className="text-xl font-display font-bold text-white">AI Request Analysis</h3>

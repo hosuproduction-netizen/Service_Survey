@@ -102,7 +102,7 @@ export const SurveyForm: React.FC = () => {
 
   if (hasSubmitted) {
     return (
-      <div className="max-w-2xl mx-auto text-center py-20 px-4 animate-fade-in-up">
+      <div className="max-w-2xl mx-auto text-center py-20 px-4 md:animate-fade-in-up">
         <GlassPanel className="flex flex-col items-center">
           <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
             <Check className="w-10 h-10 text-green-500" />
@@ -114,7 +114,7 @@ export const SurveyForm: React.FC = () => {
           </p>
 
           {/* Email Subscription Section */}
-          <div className="w-full pt-10 border-t border-white/10 animate-fade-in-up animation-delay-300">
+          <div className="w-full pt-10 border-t border-white/10 md:animate-fade-in-up animation-delay-300">
             {!emailSubmitted ? (
               <div className="flex flex-col items-center">
                 <div className="bg-indigo-500/10 p-3 rounded-full mb-4">
@@ -171,7 +171,7 @@ export const SurveyForm: React.FC = () => {
              
              <div className="space-y-12">
                {section.questions.map((q) => (
-                 <div key={q.id} className="space-y-3 animate-fadeIn">
+                 <div key={q.id} className="space-y-3 md:animate-fadeIn">
                     <label className="block text-base md:text-lg font-semibold text-gray-200 ml-1 break-keep">
                         {q.label} {q.required && <span className="text-hipixel-accent text-sm align-top">*</span>}
                     </label>
