@@ -23,9 +23,9 @@ export const SURVEY_SECTIONS: Section[] = [
       {
         id: 'q1_dealer_name',
         type: QuestionType.TEXT,
-        label: "1. A/S 서비스를 의뢰하신 대리점은 어디입니까?",
+        label: "1. 서비스를 의뢰하신 대리점은 어디입니까?",
         description: "공식서비스센터인 하이픽셀플러스에 직접 의뢰하신 경우는 '직접 방문' 또는 4번 문항으로 넘어가주세요.",
-        placeholder: "대리점명 입력 (예: 디지탈e세상, 또는 직접방문)",
+        placeholder: "대리점명 입력 (예: 대리점명, 또는 직접방문)",
         required: true
       },
       {
@@ -47,7 +47,7 @@ export const SURVEY_SECTIONS: Section[] = [
   {
     id: 'center_info',
     title: "",
-    description: "하이픽셀 공식 서비스센터에 대한 경험을 평가해주세요.",
+    description: "블랙매직디자인 공식 서비스센터에 대한 경험을 평가해주세요.",
     questions: [
       {
         id: 'q4_center_kindness',
@@ -89,16 +89,41 @@ export const SURVEY_SECTIONS: Section[] = [
         type: QuestionType.TEXTAREA,
         label: "8. 기타 다른 의견이 있으시면 말씀해 주십시오.",
         description: "고객님의 소중한 의견 반영을 위해 최선을 다하겠습니다.",
-        placeholder: "서비스 과정에서 좋았던 점이나 개선할 점을 자유롭게 적어주세요.",
+        placeholder: "서비스 이용 경험에 대한 의견을 자유롭게 작성해주시기 바랍니다.",
         required: false
       },
       {
         id: 'q9_phone_number',
         type: QuestionType.TEXT,
-        label: "9. 스타벅스 커피쿠폰 발송을 위한 휴대폰 번호",
+        label: "9. 커피쿠폰 발송을 위한 휴대폰 번호",
         description: "제공하신 개인정보는 커피쿠폰 발송 이외의 다른 용도로는 일절 사용되지 않습니다. (※업체 관계자는 해당 없음)",
         placeholder: "010-0000-0000",
         required: false
+      }
+    ]
+  },
+  {
+    id: 'privacy_consent',
+    title: "개인정보 수집 및 이용 동의",
+    description: `[개인정보 수집과 이용에 대한 동의]
+
+설문 참여 보상과 관련하여 개인정보 수집과 이용에 관한 동의를 받고자 합니다. 아래 보기에서 동의 여부를 선택해 주세요.
+
+• 수집하는 자: (주)하이픽셀플러스
+• 개인정보 수집 및 이용 목적: 설문 참여자 보상
+• 수집하는 개인정보 항목: 이름, 연락처
+• 개인정보 보유 및 이용 기간: 수집 일로부터 300일
+
+※ 귀하께서는 동의하지 않을 권리가 있습니다. 동의하지 않을 경우 설문 보상 참여에서 제외됨을 알려드립니다.`,
+    questions: [
+      {
+        id: 'q10_privacy_agreement',
+        type: QuestionType.CHECKBOX,
+        label: "약관 동의",
+        options: [
+           { label: "개인정보 수집 및 이용에 동의합니다.", value: "동의합니다" }
+        ],
+        required: true
       }
     ]
   }
