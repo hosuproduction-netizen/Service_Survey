@@ -33,14 +33,14 @@ export const SURVEY_SECTIONS: Section[] = [
         type: QuestionType.RADIO,
         label: "2. 의뢰하신 대리점의 친절도는 어떠셨습니까?",
         options: SATISFACTION_OPTIONS,
-        required: true
+        required: false
       },
       {
         id: 'q3_dealer_expertise',
         type: QuestionType.RADIO,
         label: "3. 의뢰하신 대리점의 전문성은 어떠셨습니까?",
         options: SATISFACTION_OPTIONS,
-        required: true
+        required: false
       }
     ]
   },
@@ -103,7 +103,7 @@ export const SURVEY_SECTIONS: Section[] = [
         id: 'q9_privacy_contact',
         type: QuestionType.PRIVACY_CONTACT,
         label: "9. 커피쿠폰 발송을 위한 휴대폰 번호 및 마케팅 목적의 이메일 주소 작성(선택)",
-        description: "제공하신 개인정보는 커피쿠폰 발송 및 마케팅 목적 이외의 다른 용도로는 일절 사용되지 않습니다. (※대리점 및 업체 관계자는 해당 사항 없음)",
+        description: "제공하신 개인정보는 커피쿠폰 발송 및 마케팅 목적 이외의 다른 용도로는 일절 사용되지 않습니다. \n(※대리점 및 업체 관계자는 해당 사항 없음)",
         required: true 
       }
     ]
