@@ -2,19 +2,14 @@ import React, { useState } from 'react';
 import { SURVEY_SECTIONS, GOOGLE_SCRIPT_URL } from '../constants';
 import { QuestionType, SurveyData } from '../types';
 import { Button, Input, TextArea, SelectCard, GlassPanel } from './UI';
-import { Check, Send, AlertTriangle, Mail, Sparkles } from 'lucide-react';
-import { submitToGoogleSheet, submitSubscription } from '../services/sheetService';
+import { Check, Send, AlertTriangle } from 'lucide-react';
+import { submitToGoogleSheet } from '../services/sheetService';
 
 export const SurveyForm: React.FC = () => {
   const [formData, setFormData] = useState<SurveyData>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  // Email Subscription State
-  const [email, setEmail] = useState('');
-  const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
-  const [emailSubmitted, setEmailSubmitted] = useState(false);
 
   const handleInputChange = (id: string, value: any) => {
     // 휴대폰 번호 포맷팅 로직
@@ -41,6 +36,19 @@ export const SurveyForm: React.FC = () => {
   const isFormValid = () => {
     for (const section of SURVEY_SECTIONS) {
       for (const q of section.questions) {
+        if (q.type === QuestionType.PRIVACY_CONTACT) {
+           // Check logic for Q9: Agreement is required to be selected (Yes or No)
+           if (!formData['privacy_agreement']) {
+             return false;
+           }
+           // If Agreed, Phone is required (Email is usually optional or required based on business logic, here we make phone required if agreed)
+           if (formData['privacy_agreement'] === '동의합니다' && !formData['q9_phone_number']) {
+             alert('개인정보 수집에 동의하실 경우 휴대폰 번호는 필수입니다.');
+             return false;
+           }
+           continue;
+        }
+
         if (q.required && !formData[q.id]) {
           return false;
         }
@@ -62,6 +70,7 @@ export const SurveyForm: React.FC = () => {
     setIsSubmitting(true);
     setErrorMsg(null);
     
+    // 9번 항목의 전화번호와 이메일도 formData에 포함되어 전송됩니다.
     const sheetSuccess = await submitToGoogleSheet(formData);
     
     if (!sheetSuccess) {
@@ -76,30 +85,6 @@ export const SurveyForm: React.FC = () => {
     setIsSubmitting(false);
   };
 
-  const handleEmailSubmit = async () => {
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      alert("올바른 이메일 주소를 입력해주세요.");
-      return;
-    }
-
-    setIsEmailSubmitting(true);
-    
-    // 설문 데이터에 있는 전화번호를 가져옵니다.
-    const phoneNumber = formData['q9_phone_number'] as string;
-
-    const success = await submitSubscription(email, phoneNumber);
-    
-    // Simulate delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    if (success) {
-      setEmailSubmitted(true);
-    } else {
-      alert("구독 신청 중 오류가 발생했습니다.");
-    }
-    setIsEmailSubmitting(false);
-  };
-
   if (hasSubmitted) {
     return (
       <div className="max-w-2xl mx-auto text-center py-20 px-4 md:animate-fade-in-up">
@@ -110,49 +95,8 @@ export const SurveyForm: React.FC = () => {
           <h2 className="text-4xl font-display font-bold mb-4 text-white">제출 완료</h2>
           <p className="text-gray-300 mb-10 max-w-md leading-relaxed text-lg">
             감사합니다. <br/>고객님의 소중한 의견이 안전하게 접수되었습니다. <br/> 참여해 주셔서 감사합니다.<br/>
-            커피쿠폰은 입력하신 번호로 <br/>매월 5일경 에 일괄 발송됩니다.
+            스타벅스 쿠폰은 입력하신 번호로 <br/>매월 1일에 일괄 발송됩니다.
           </p>
-
-          {/* Email Subscription Section */}
-          <div className="w-full pt-10 border-t border-white/10 md:animate-fade-in-up animation-delay-300">
-            {!emailSubmitted ? (
-              <div className="flex flex-col items-center">
-                <div className="bg-indigo-500/10 p-3 rounded-full mb-4">
-                   <Mail className="w-6 h-6 text-hipixel-accent" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                  최신 기술 소식 받기 <Sparkles className="w-4 h-4 text-yellow-300" />
-                </h3>
-                <p className="text-gray-400 mb-6 max-w-sm text-sm leading-relaxed">
-                  블랙매직디자인의 최신 기술 뉴스레터와<br/>
-                  자주 묻는 질문(FAQ)을 정리하여 이메일로 보내드립니다.
-                </p>
-                <div className="flex w-full max-w-sm gap-2">
-                  <Input 
-                    placeholder="이메일 주소를 입력하세요" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button 
-                    onClick={handleEmailSubmit} 
-                    isLoading={isEmailSubmitting}
-                    disabled={isEmailSubmitting}
-                    className="whitespace-nowrap px-6"
-                  >
-                    구독하기
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="py-6 bg-hipixel-accent/10 rounded-xl w-full max-w-md mx-auto border border-hipixel-accent/20">
-                <h3 className="text-xl font-bold text-hipixel-accent mb-2">구독 신청 완료!</h3>
-                <p className="text-gray-300 text-sm">
-                  앞으로 유용한 정보를 메일로 전해드리겠습니다.
-                </p>
-              </div>
-            )}
-          </div>
         </GlassPanel>
       </div>
     );
@@ -165,104 +109,159 @@ export const SurveyForm: React.FC = () => {
           <div key={section.id} className={sIdx > 0 ? "mt-16 pt-16 border-t border-white/5" : ""}>
              <div className="mb-10">
                <span className="text-hipixel-accent font-mono text-sm tracking-wider uppercase mb-2 block">Part {sIdx + 1}</span>
-               {/* Reduced font size from text-2xl/3xl to text-lg/xl to match question titles */}
                <h2 className="text-lg md:text-xl font-display font-bold mb-2 break-keep text-white">{section.title}</h2>
-               
-               {/* Conditional rendering for Privacy Consent section description */}
-               {section.id === 'privacy_consent' ? (
-                 <div className="h-48 overflow-y-auto p-4 bg-white/5 rounded-lg border border-white/10 text-sm text-gray-400 leading-relaxed whitespace-pre-line mb-6 shadow-inner">
-                    {section.description}
-                 </div>
-               ) : (
-                 <p className="text-gray-400 text-base md:text-lg break-keep whitespace-pre-line leading-relaxed">{section.description}</p>
-               )}
+               <p className="text-gray-400 text-base md:text-lg break-keep whitespace-pre-line leading-relaxed">{section.description}</p>
              </div>
              
              <div className="space-y-12">
                {section.questions.map((q) => (
                  <div key={q.id} className="space-y-3 md:animate-fadeIn">
-                    <label className="block text-base md:text-lg font-semibold text-gray-200 ml-1 break-keep">
-                        {q.label} {q.required && <span className="text-hipixel-accent text-sm align-top">*</span>}
-                    </label>
-                    {q.description && (
-                        <p className="text-sm text-gray-300 ml-1 -mt-1 mb-2 leading-relaxed opacity-90">{q.description}</p>
-                    )}
+                    
+                    {/* Special Handling for Privacy Contact Group */}
+                    {q.type === QuestionType.PRIVACY_CONTACT ? (
+                      <div className="space-y-6">
+                        <div>
+                          <label className="block text-base md:text-lg font-semibold text-gray-200 break-keep mb-1">
+                              {q.label}
+                          </label>
+                          <p className="text-sm text-gray-300 leading-relaxed opacity-90">{q.description}</p>
+                        </div>
 
-                    {q.type === QuestionType.TEXT && (
-                        <Input 
-                        placeholder={q.placeholder}
-                        value={formData[q.id] || ''}
-                        onChange={(e) => handleInputChange(q.id, e.target.value)}
-                        />
-                    )}
+                        {/* Phone & Email Inputs */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <Input 
+                            placeholder="휴대폰 번호 (010-0000-0000)"
+                            value={formData['q9_phone_number'] || ''}
+                            onChange={(e) => handleInputChange('q9_phone_number', e.target.value)}
+                          />
+                          <Input 
+                            placeholder="이메일 주소"
+                            value={formData['q9_email'] || ''}
+                            onChange={(e) => handleInputChange('q9_email', e.target.value)}
+                          />
+                        </div>
 
-                    {q.type === QuestionType.TEXTAREA && (
-                        <TextArea 
-                        placeholder={q.placeholder}
-                        value={formData[q.id] || ''}
-                        onChange={(e) => handleInputChange(q.id, e.target.value)}
-                        />
-                    )}
+                        {/* Privacy Agreement Text */}
+                        <div className="mt-8">
+                           <h4 className="text-lg font-bold text-white mb-3">[개인정보 수집과 이용에 대한 동의항목]</h4>
+                           <div className="bg-white/5 rounded-lg border border-white/10 p-5 text-sm text-gray-300 leading-relaxed shadow-inner">
+                             <p className="mb-4">개인정보 수집 및 이용에 동의해주세요. 동의한 분에 한해 커피쿠폰이 발송됩니다.</p>
+                             <ul className="list-none space-y-1 mb-4">
+                               <li>1. 수집목적 : 설문조사 응답자 커피쿠폰증정 및 마케팅 활용 동의</li>
+                               <li>2. 수집항목 : 휴대폰번호와 이메일주소</li>
+                               <li>3. 보유 및 이용기간 : 입력일로 부터 1년까지</li>
+                             </ul>
+                             <div className="font-semibold text-hipixel-accent mb-1">약관동의</div>
+                             <p className="text-gray-400 text-xs">※ 귀하께서는 동의하지 않을 권리가 있습니다. 동의하지 않을 경우 설문 보상 참여에서 제외됨을 알려드립니다.</p>
+                           </div>
+                        </div>
 
-                    {q.type === QuestionType.SELECT && (
-                        <div className="relative">
-                        <select
-                            className="w-full px-4 py-3 bg-[#0f0f12] border border-white/10 rounded-lg text-white focus:outline-none focus:border-hipixel-accent appearance-none"
+                        {/* Agreement Radio Buttons */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                            {['동의합니다', '동의하지 않습니다'].map((val) => (
+                              <SelectCard
+                                key={val}
+                                label={val === '동의합니다' ? '네, 동의합니다.' : '동의하지 않습니다.'}
+                                selected={formData['privacy_agreement'] === val}
+                                onClick={() => {
+                                  // Toggle logic: If already selected, clear it; otherwise set it
+                                  const currentVal = formData['privacy_agreement'];
+                                  const newVal = currentVal === val ? '' : val;
+                                  handleInputChange('privacy_agreement', newVal);
+                                }}
+                              />
+                            ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <label className="block text-base md:text-lg font-semibold text-gray-200 ml-1 break-keep">
+                            {q.label} {q.required && <span className="text-hipixel-accent text-sm align-top">*</span>}
+                        </label>
+                        {q.description && (
+                            <p className="text-sm text-gray-300 ml-1 -mt-1 mb-2 leading-relaxed opacity-90">{q.description}</p>
+                        )}
+
+                        {q.type === QuestionType.TEXT && (
+                            <Input 
+                            placeholder={q.placeholder}
                             value={formData[q.id] || ''}
                             onChange={(e) => handleInputChange(q.id, e.target.value)}
-                        >
-                            <option value="" disabled>선택해주세요</option>
-                            {q.options?.map(opt => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                            ))}
-                        </select>
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                            ▼
-                        </div>
-                        </div>
-                    )}
-
-                    {q.type === QuestionType.RADIO && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {q.options?.map((opt) => (
-                            <SelectCard
-                            key={opt.value}
-                            label={opt.label}
-                            selected={formData[q.id] === opt.value}
-                            onClick={() => handleInputChange(q.id, opt.value)}
                             />
-                        ))}
-                        </div>
-                    )}
+                        )}
 
-                    {q.type === QuestionType.CHECKBOX && (
-                       <div className="flex flex-col gap-3">
-                         {q.options?.map(opt => {
-                            const isChecked = formData[q.id] === opt.value;
-                            return (
-                              <label key={opt.value} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
-                                 <div className={`
-                                    w-6 h-6 rounded border flex items-center justify-center transition-all duration-200
-                                    ${isChecked ? 'bg-hipixel-accent border-hipixel-accent' : 'bg-white/5 border-gray-600 group-hover:border-gray-400'}
-                                 `}>
-                                    {isChecked && <Check className="w-4 h-4 text-white" />}
-                                 </div>
-                                 <input 
-                                    type="checkbox" 
-                                    className="hidden"
-                                    checked={isChecked}
-                                    onChange={() => {
-                                        // Toggle logic: if checked, set to empty; if unchecked, set to value
-                                        handleInputChange(q.id, isChecked ? '' : opt.value);
-                                    }}
-                                 />
-                                 <span className={`text-base select-none ${isChecked ? 'text-white font-medium' : 'text-gray-400'}`}>
-                                    {opt.label}
-                                 </span>
-                              </label>
-                            )
-                         })}
-                       </div>
+                        {q.type === QuestionType.TEXTAREA && (
+                            <TextArea 
+                            placeholder={q.placeholder}
+                            value={formData[q.id] || ''}
+                            onChange={(e) => handleInputChange(q.id, e.target.value)}
+                            />
+                        )}
+
+                        {q.type === QuestionType.SELECT && (
+                            <div className="relative">
+                            <select
+                                className="w-full px-4 py-3 bg-[#0f0f12] border border-white/10 rounded-lg text-white focus:outline-none focus:border-hipixel-accent appearance-none"
+                                value={formData[q.id] || ''}
+                                onChange={(e) => handleInputChange(q.id, e.target.value)}
+                            >
+                                <option value="" disabled>선택해주세요</option>
+                                {q.options?.map(opt => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
+                            </select>
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                ▼
+                            </div>
+                            </div>
+                        )}
+
+                        {q.type === QuestionType.RADIO && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {q.options?.map((opt) => (
+                                <SelectCard
+                                key={opt.value}
+                                label={opt.label}
+                                selected={formData[q.id] === opt.value}
+                                onClick={() => {
+                                    const currentVal = formData[q.id];
+                                    const newVal = currentVal === opt.value ? '' : opt.value;
+                                    handleInputChange(q.id, newVal);
+                                }}
+                                />
+                            ))}
+                            </div>
+                        )}
+
+                        {q.type === QuestionType.CHECKBOX && (
+                          <div className="flex flex-col gap-3">
+                            {q.options?.map(opt => {
+                                const isChecked = formData[q.id] === opt.value;
+                                return (
+                                  <label key={opt.value} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
+                                    <div className={`
+                                        w-6 h-6 rounded border flex items-center justify-center transition-all duration-200
+                                        ${isChecked ? 'bg-hipixel-accent border-hipixel-accent' : 'bg-white/5 border-gray-600 group-hover:border-gray-400'}
+                                    `}>
+                                        {isChecked && <Check className="w-4 h-4 text-white" />}
+                                    </div>
+                                    <input 
+                                        type="checkbox" 
+                                        className="hidden"
+                                        checked={isChecked}
+                                        onChange={() => {
+                                            handleInputChange(q.id, isChecked ? '' : opt.value);
+                                        }}
+                                    />
+                                    <span className={`text-base select-none ${isChecked ? 'text-white font-medium' : 'text-gray-400'}`}>
+                                        {opt.label}
+                                    </span>
+                                  </label>
+                                )
+                            })}
+                          </div>
+                        )}
+                      </>
                     )}
                  </div>
                ))}
