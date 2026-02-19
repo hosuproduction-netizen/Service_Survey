@@ -62,7 +62,7 @@ const App: React.FC = () => {
              </span>
            </h1>
            <p className="text-base md:text-2xl text-gray-200 max-w-2xl mx-auto font-light leading-loose md:leading-relaxed drop-shadow-lg text-shadow-sm tracking-wide md:tracking-normal break-keep">
-             고객님의 A/S 경험을 들려주세요. <br className="block"/>
+             고객님의 서비스 경험을 들려주세요. <br className="block"/>
              하이픽셀플러스는 고객님의 목소리에 귀 기울여 <br className="hidden md:block"/> 최고의 서비스를 만들어 가겠습니다.
            </p>
         </div>
