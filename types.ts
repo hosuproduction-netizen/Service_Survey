@@ -3,7 +3,8 @@ export enum QuestionType {
   TEXTAREA = 'TEXTAREA',
   SELECT = 'SELECT',
   RADIO = 'RADIO',
-  CHECKBOX = 'CHECKBOX'
+  CHECKBOX = 'CHECKBOX',
+  PRIVACY_CONTACT = 'PRIVACY_CONTACT'
 }
 
 export interface Option {
