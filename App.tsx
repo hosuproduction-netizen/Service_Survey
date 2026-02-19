@@ -53,7 +53,7 @@ const App: React.FC = () => {
         {/* Hero Content */}
         <div className="relative z-10 text-center px-4 max-w-4xl mt-10 md:animate-fade-in-up">
            <span className="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-xs font-bold uppercase tracking-[0.2em] mb-8 backdrop-blur-md shadow-lg">
-             Service Feedback
+             Service Survey
            </span>
            <h1 className="text-4xl md:text-7xl font-display font-bold mb-6 text-white drop-shadow-2xl tracking-tight md:tracking-tight leading-snug md:leading-tight break-keep">
              더 나은 서비스를 위한<br />
