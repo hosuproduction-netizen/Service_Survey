@@ -110,7 +110,7 @@ export const SurveyForm: React.FC = () => {
           <h2 className="text-4xl font-display font-bold mb-4 text-white">제출 완료</h2>
           <p className="text-gray-300 mb-10 max-w-md leading-relaxed text-lg">
             감사합니다. <br/>고객님의 소중한 의견이 안전하게 접수되었습니다. <br/> 참여해 주셔서 감사합니다.<br/>
-            스타벅스 쿠폰은 입력하신 번호로 <br/>매월 1일에 일괄 발송됩니다.
+            커피쿠폰은 입력하신 번호로 <br/>매월 5일경 에 일괄 발송됩니다.
           </p>
 
           {/* Email Subscription Section */}
