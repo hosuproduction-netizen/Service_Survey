@@ -16,6 +16,7 @@ export const submitToGoogleSheet = async (data: SurveyData): Promise<boolean> =>
   }
 
   // Google Apps Script expects these exact keys
+  // Updated for new Question 9 Structure (Phone + Email + Agreement)
   const payload = {
     type: 'survey',
     timestamp: getFormattedDate(),
@@ -27,8 +28,10 @@ export const submitToGoogleSheet = async (data: SurveyData): Promise<boolean> =>
     q6_repair_cost: data.q6_repair_cost || 'na',
     q7_product_satisfaction: data.q7_product_satisfaction || '',
     q8_other_opinions: data.q8_other_opinions || '',
-    q9_phone_number: data.q9_phone_number || '',
-    q10_privacy_agreement: data.q10_privacy_agreement || ''
+    // Use the keys used in SurveyForm custom renderer
+    q9_phone_number: data.q9_phone_number || '', 
+    q9_email: data.q9_email || '',
+    q10_privacy_agreement: data.privacy_agreement || '' 
   };
 
   try {
@@ -42,31 +45,6 @@ export const submitToGoogleSheet = async (data: SurveyData): Promise<boolean> =>
     return true;
   } catch (error) {
     console.error("Error submitting to Google Sheet:", error);
-    return false;
-  }
-};
-
-export const submitSubscription = async (email: string, phoneNumber: string): Promise<boolean> => {
-  if (!GOOGLE_SCRIPT_URL) {
-    return true; 
-  }
-
-  const payload = {
-    type: 'subscription',
-    email: email,
-    phone_number: phoneNumber || '',
-    timestamp: getFormattedDate()
-  };
-
-  try {
-    await fetch(GOOGLE_SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      mode: "no-cors"
-    });
-    return true;
-  } catch (error) {
-    console.error("Error submitting subscription:", error);
     return false;
   }
 };
