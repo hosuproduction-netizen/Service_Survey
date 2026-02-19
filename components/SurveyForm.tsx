@@ -45,15 +45,23 @@ export const SurveyForm: React.FC = () => {
              continue;
            }
 
-           // 참여 체크했는데 동의 여부를 선택 안한 경우
+           // 참여 체크시 필수 입력 확인
+           if (!formData['q9_phone_number']) {
+             alert('이벤트 참여를 위해 휴대 전화번호를 입력해주세요.');
+             return false;
+           }
+
+           if (!formData['q9_email']) {
+             alert('이벤트 참여를 위해 이메일 주소를 입력해주세요.');
+             return false;
+           }
+
+           // 동의 여부 선택 확인
            if (!formData['privacy_agreement']) {
+             alert('개인정보 수집 및 이용 동의 여부를 선택해주세요.');
              return false;
            }
-           // 동의했는데 전화번호가 없는 경우
-           if (formData['privacy_agreement'] === '동의합니다' && !formData['q9_phone_number']) {
-             alert('개인정보 수집에 동의하실 경우 휴대 전화번호는 필수입니다.');
-             return false;
-           }
+
            continue;
         }
 
@@ -173,16 +181,28 @@ export const SurveyForm: React.FC = () => {
                           <div className="space-y-6 pt-4 animate-fadeIn border-t border-white/5 mt-4">
                             {/* Phone & Email Inputs */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <Input 
-                                placeholder="휴대 전화번호 (010-0000-0000)"
-                                value={formData['q9_phone_number'] || ''}
-                                onChange={(e) => handleInputChange('q9_phone_number', e.target.value)}
-                              />
-                              <Input 
-                                placeholder="이메일 주소"
-                                value={formData['q9_email'] || ''}
-                                onChange={(e) => handleInputChange('q9_email', e.target.value)}
-                              />
+                              <div>
+                                <Input 
+                                  placeholder="휴대 전화번호 (010-0000-0000)"
+                                  value={formData['q9_phone_number'] || ''}
+                                  onChange={(e) => handleInputChange('q9_phone_number', e.target.value)}
+                                  className={!formData['q9_phone_number'] ? 'border-hipixel-accent/50' : ''}
+                                />
+                                <div className="mt-1 text-right">
+                                  <span className="text-xs text-hipixel-accent">* 필수 입력</span>
+                                </div>
+                              </div>
+                              <div>
+                                <Input 
+                                  placeholder="이메일 주소"
+                                  value={formData['q9_email'] || ''}
+                                  onChange={(e) => handleInputChange('q9_email', e.target.value)}
+                                  className={!formData['q9_email'] ? 'border-hipixel-accent/50' : ''}
+                                />
+                                <div className="mt-1 text-right">
+                                  <span className="text-xs text-hipixel-accent">* 필수 입력</span>
+                                </div>
+                              </div>
                             </div>
 
                             {/* Privacy Agreement Text */}
