@@ -27,7 +27,8 @@ export const submitToGoogleSheet = async (data: SurveyData): Promise<boolean> =>
     q6_repair_cost: data.q6_repair_cost || 'na',
     q7_product_satisfaction: data.q7_product_satisfaction || '',
     q8_other_opinions: data.q8_other_opinions || '',
-    q9_phone_number: data.q9_phone_number || ''
+    q9_phone_number: data.q9_phone_number || '',
+    q10_privacy_agreement: data.q10_privacy_agreement || ''
   };
 
   try {
