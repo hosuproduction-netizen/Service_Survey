@@ -124,7 +124,7 @@ export const SurveyForm: React.FC = () => {
                           <label className="block text-base md:text-lg font-semibold text-gray-200 break-keep mb-1">
                               {q.label}
                           </label>
-                          <p className="text-sm text-gray-300 leading-relaxed opacity-90">{q.description}</p>
+                          <p className="text-sm text-gray-300 leading-relaxed opacity-90 whitespace-pre-line">{q.description}</p>
                         </div>
 
                         {/* Phone & Email Inputs */}
@@ -145,9 +145,9 @@ export const SurveyForm: React.FC = () => {
                         <div className="mt-8">
                            <h4 className="text-lg font-bold text-white mb-3">[개인정보 수집과 이용에 대한 동의항목]</h4>
                            <div className="bg-white/5 rounded-lg border border-white/10 p-5 text-sm text-gray-300 leading-relaxed shadow-inner">
-                             <p className="mb-4">개인정보 수집 및 이용에 동의해주세요. 동의한 분에 한해 커피쿠폰이 발송됩니다.</p>
+                             <p className="mb-4">개인정보 수집 및 이용에 동의해주세요. 동의한 사람에 한해 이벤트 추첨이 진행됩니다.</p>
                              <ul className="list-none space-y-1 mb-4">
-                               <li>1. 수집목적 : 설문조사 응답자 커피쿠폰증정 및 마케팅 활용 동의</li>
+                               <li>1. 수집목적 : 설문조사 응답자 커피쿠폰 보상</li>
                                <li>2. 수집항목 : 휴대폰번호와 이메일주소</li>
                                <li>3. 보유 및 이용기간 : 입력일로 부터 1년까지</li>
                              </ul>
