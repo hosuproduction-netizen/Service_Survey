@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SURVEY_SECTIONS, GOOGLE_SCRIPT_URL } from '../constants';
 import { QuestionType, SurveyData } from '../types';
 import { Button, Input, TextArea, SelectCard, GlassPanel } from './UI';
-import { Check, Send, AlertTriangle } from 'lucide-react';
+import { Check, Send, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { submitToGoogleSheet } from '../services/sheetService';
 
 export const SurveyForm: React.FC = () => {
@@ -37,13 +37,21 @@ export const SurveyForm: React.FC = () => {
     for (const section of SURVEY_SECTIONS) {
       for (const q of section.questions) {
         if (q.type === QuestionType.PRIVACY_CONTACT) {
-           // Check logic for Q9: Agreement is required to be selected (Yes or No)
+           // 9번 항목: 체크박스(q9_opt_in)가 'true'일 때만 내부 유효성 검사 진행
+           const isOptedIn = formData['q9_opt_in'] === 'true';
+           
+           if (!isOptedIn) {
+             // 참여하지 않는 경우 유효한 것으로 간주 (넘어가기)
+             continue;
+           }
+
+           // 참여 체크했는데 동의 여부를 선택 안한 경우
            if (!formData['privacy_agreement']) {
              return false;
            }
-           // If Agreed, Phone is required (Email is usually optional or required based on business logic, here we make phone required if agreed)
+           // 동의했는데 전화번호가 없는 경우
            if (formData['privacy_agreement'] === '동의합니다' && !formData['q9_phone_number']) {
-             alert('개인정보 수집에 동의하실 경우 휴대폰 번호는 필수입니다.');
+             alert('개인정보 수집에 동의하실 경우 휴대 전화번호는 필수입니다.');
              return false;
            }
            continue;
@@ -71,6 +79,7 @@ export const SurveyForm: React.FC = () => {
     setErrorMsg(null);
     
     // 9번 항목의 전화번호와 이메일도 formData에 포함되어 전송됩니다.
+    // (Opt-in 안한 경우 빈 값으로 전송됨)
     const sheetSuccess = await submitToGoogleSheet(formData);
     
     if (!sheetSuccess) {
@@ -127,51 +136,122 @@ export const SurveyForm: React.FC = () => {
                           <p className="text-sm text-gray-300 leading-relaxed opacity-90 whitespace-pre-line">{q.description}</p>
                         </div>
 
-                        {/* Phone & Email Inputs */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <Input 
-                            placeholder="휴대폰 번호 (010-0000-0000)"
-                            value={formData['q9_phone_number'] || ''}
-                            onChange={(e) => handleInputChange('q9_phone_number', e.target.value)}
-                          />
-                          <Input 
-                            placeholder="이메일 주소"
-                            value={formData['q9_email'] || ''}
-                            onChange={(e) => handleInputChange('q9_email', e.target.value)}
-                          />
+                        {/* Opt-in Toggle Checkbox */}
+                        <div 
+                          className={`
+                            relative flex items-center gap-4 p-5 rounded-xl border transition-all duration-300 cursor-pointer group
+                            ${formData['q9_opt_in'] === 'true' 
+                              ? 'bg-hipixel-accent/10 border-hipixel-accent shadow-[0_0_20px_rgba(99,102,241,0.15)]' 
+                              : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'}
+                          `}
+                          onClick={() => {
+                            const currentVal = formData['q9_opt_in'] === 'true';
+                            handleInputChange('q9_opt_in', currentVal ? 'false' : 'true');
+                          }}
+                        >
+                           <div className={`
+                                w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 flex-shrink-0
+                                ${formData['q9_opt_in'] === 'true' ? 'bg-hipixel-accent border-hipixel-accent' : 'bg-transparent border-gray-500 group-hover:border-gray-300'}
+                            `}>
+                                {formData['q9_opt_in'] === 'true' && <Check className="w-4 h-4 text-white" />}
+                            </div>
+                            <div className="flex-1">
+                                <span className={`text-lg font-medium ${formData['q9_opt_in'] === 'true' ? 'text-white' : 'text-gray-300'}`}>
+                                  커피쿠폰 이벤트 참여 및 정보 입력
+                                </span>
+                                <p className="text-sm text-gray-400 mt-1">
+                                  선택하시면 정보 입력란이 나타납니다.
+                                </p>
+                            </div>
+                            <div className="text-gray-400">
+                                {formData['q9_opt_in'] === 'true' ? <ChevronUp /> : <ChevronDown />}
+                            </div>
                         </div>
 
-                        {/* Privacy Agreement Text */}
-                        <div className="mt-8">
-                           <h4 className="text-lg font-bold text-white mb-3">[개인정보 수집과 이용에 대한 동의항목]</h4>
-                           <div className="bg-white/5 rounded-lg border border-white/10 p-5 text-sm text-gray-300 leading-relaxed shadow-inner">
-                             <p className="mb-4">개인정보 수집 및 이용에 동의해주세요. 동의한 사람에 한해 이벤트 추첨이 진행됩니다.</p>
-                             <ul className="list-none space-y-1 mb-4">
-                               <li>1. 수집목적 : 설문조사 응답자 커피쿠폰 보상</li>
-                               <li>2. 수집항목 : 휴대폰번호와 이메일주소</li>
-                               <li>3. 보유 및 이용기간 : 입력일로 부터 1년까지</li>
-                             </ul>
-                             <div className="font-semibold text-hipixel-accent mb-1">약관동의</div>
-                             <p className="text-gray-400 text-xs">※ 귀하께서는 동의하지 않을 권리가 있습니다. 동의하지 않을 경우 설문 보상 참여에서 제외됨을 알려드립니다.</p>
-                           </div>
-                        </div>
-
-                        {/* Agreement Radio Buttons */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                            {['동의합니다', '동의하지 않습니다'].map((val) => (
-                              <SelectCard
-                                key={val}
-                                label={val === '동의합니다' ? '네, 동의합니다.' : '동의하지 않습니다.'}
-                                selected={formData['privacy_agreement'] === val}
-                                onClick={() => {
-                                  // Toggle logic: If already selected, clear it; otherwise set it
-                                  const currentVal = formData['privacy_agreement'];
-                                  const newVal = currentVal === val ? '' : val;
-                                  handleInputChange('privacy_agreement', newVal);
-                                }}
+                        {/* Hidden Content: Only shows when opted in */}
+                        {formData['q9_opt_in'] === 'true' && (
+                          <div className="space-y-6 pt-4 animate-fadeIn border-t border-white/5 mt-4">
+                            {/* Phone & Email Inputs */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <Input 
+                                placeholder="휴대 전화번호 (010-0000-0000)"
+                                value={formData['q9_phone_number'] || ''}
+                                onChange={(e) => handleInputChange('q9_phone_number', e.target.value)}
                               />
-                            ))}
-                        </div>
+                              <Input 
+                                placeholder="이메일 주소"
+                                value={formData['q9_email'] || ''}
+                                onChange={(e) => handleInputChange('q9_email', e.target.value)}
+                              />
+                            </div>
+
+                            {/* Privacy Agreement Text */}
+                            <div className="mt-8">
+                              <h4 className="text-lg font-bold text-white mb-3">[개인정보 수집 및 이용 동의]</h4>
+                              <div className="bg-white/5 rounded-lg border border-white/10 p-5 text-sm text-gray-300 leading-relaxed shadow-inner">
+                                <div className="space-y-4">
+                                    <p className="leading-relaxed">
+                                      커피쿠폰 증정 및 마케팅 활용 동의를 위해 아래와 같이 개인정보를 수집·이용하고자 합니다. 내용을 확인하신 후 동의 여부를 결정하여 주시기 바랍니다. 동의하신 경우에 한하여 커피쿠폰 증정 대상이 됩니다.
+                                    </p>
+                                    
+                                    <div className="space-y-3 pt-2">
+                                        <div>
+                                            <span className="block font-semibold text-white text-sm mb-1">수집 목적</span>
+                                            <ul className="text-gray-400 text-xs space-y-1 list-disc list-inside">
+                                                <li>설문조사 응답자 대상 커피 쿠폰 발송</li>
+                                                <li>이메일을 통한 마케팅 정보 제공</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div>
+                                            <span className="block font-semibold text-white text-sm mb-1">수집 항목</span>
+                                            <ul className="text-gray-400 text-xs space-y-1 list-disc list-inside">
+                                                <li>휴대전화번호</li>
+                                                <li>이메일 주소</li>
+                                            </ul>
+                                        </div>
+
+                                        <div>
+                                            <span className="block font-semibold text-white text-sm mb-1">이용 방법</span>
+                                            <ul className="text-gray-400 text-xs space-y-1 list-disc list-inside">
+                                                <li>휴대전화번호는 커피 쿠폰 증정을 위한 용도로만 활용됩니다.</li>
+                                                <li>이메일 주소는 마케팅 정보 제공을 위한 용도로 활용될 수 있습니다.</li>
+                                            </ul>
+                                        </div>
+
+                                        <div>
+                                            <span className="block font-semibold text-white text-sm mb-1">보유 및 이용 기간</span>
+                                            <p className="text-gray-400 text-xs">입력일로부터 1년간 보유 및 이용 후 파기</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-3 border-t border-white/10">
+                                        <p className="text-gray-500 text-xs leading-relaxed">
+                                        ※ 귀하께서는 개인정보 수집 및 이용에 대한 동의를 거부하실 권리가 있습니다. 다만, 동의를 거부하실 경우 이벤트 추첨 대상에서 제외될 수 있습니다.
+                                        </p>
+                                    </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Agreement Radio Buttons */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                                {['동의합니다', '동의하지 않습니다'].map((val) => (
+                                  <SelectCard
+                                    key={val}
+                                    label={val === '동의합니다' ? '네, 동의합니다.' : '동의하지 않습니다.'}
+                                    selected={formData['privacy_agreement'] === val}
+                                    onClick={() => {
+                                      // Toggle logic: If already selected, clear it; otherwise set it
+                                      const currentVal = formData['privacy_agreement'];
+                                      const newVal = currentVal === val ? '' : val;
+                                      handleInputChange('privacy_agreement', newVal);
+                                    }}
+                                  />
+                                ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <>
