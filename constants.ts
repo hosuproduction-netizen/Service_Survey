@@ -4,7 +4,7 @@ export const APP_NAME = "서비스 만족도 설문조사";
 
 // TODO: 구글 앱스 스크립트 배포 후 발급받은 웹 앱 URL을 아래에 입력해주세요.
 // 예: "https://script.google.com/macros/s/AKfycbx.../exec"
-export const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCm9YgUVIKdrDlMGrkPfSNz1Mw7C2VJh2M3VeI2hjeLfhNwAHGs7AUfbYcze_0mfc6sg/exec"; 
+export const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCj5MoMXjg1b86ORyntLDRwOMu7tuinXoPyVgukTmy2BZNxBatZoz3kSZSVC6NEP-UNg/exec"; 
 
 const SATISFACTION_OPTIONS = [
   { label: "매우 만족", value: "매우 만족" },
@@ -91,39 +91,20 @@ export const SURVEY_SECTIONS: Section[] = [
         description: "고객님의 소중한 의견 반영을 위해 최선을 다하겠습니다.",
         placeholder: "서비스 이용 경험에 대한 의견을 자유롭게 작성해주시기 바랍니다.",
         required: false
-      },
-      {
-        id: 'q9_phone_number',
-        type: QuestionType.TEXT,
-        label: "9. 커피쿠폰 발송을 위한 휴대폰 번호",
-        description: "제공하신 개인정보는 커피쿠폰 발송 이외의 다른 용도로는 일절 사용되지 않습니다. (※업체 관계자는 해당 없음)",
-        placeholder: "010-0000-0000",
-        required: false
       }
     ]
   },
   {
-    id: 'privacy_consent',
-    title: "개인정보 수집 및 이용 동의",
-    description: `[개인정보 수집과 이용에 대한 동의]
-
-설문 참여 보상과 관련하여 개인정보 수집과 이용에 관한 동의를 받고자 합니다. 아래 보기에서 동의 여부를 선택해 주세요.
-
-• 수집하는 자: (주)하이픽셀플러스
-• 개인정보 수집 및 이용 목적: 설문 참여자 보상
-• 수집하는 개인정보 항목: 이름, 연락처
-• 개인정보 보유 및 이용 기간: 수집 일로부터 300일
-
-※ 귀하께서는 동의하지 않을 권리가 있습니다. 동의하지 않을 경우 설문 보상 참여에서 제외됨을 알려드립니다.`,
+    id: 'reward_info',
+    title: "",
+    description: "설문조사에 참여해 주셔서 감사합니다.",
     questions: [
       {
-        id: 'q10_privacy_agreement',
-        type: QuestionType.CHECKBOX,
-        label: "약관 동의",
-        options: [
-           { label: "개인정보 수집 및 이용에 동의합니다.", value: "동의합니다" }
-        ],
-        required: true
+        id: 'q9_privacy_contact',
+        type: QuestionType.PRIVACY_CONTACT,
+        label: "9. 커피쿠폰 발송을 위한 휴대폰 번호 및 마케팅 목적의 이메일 주소 작성(선택)",
+        description: "제공하신 개인정보는 커피쿠폰 발송 및 마케팅 목적 이외의 다른 용도로는 일절 사용되지 않습니다. (※대리점 및 업체 관계자는 해당 사항 없음)",
+        required: true 
       }
     ]
   }
