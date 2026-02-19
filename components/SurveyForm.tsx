@@ -165,8 +165,17 @@ export const SurveyForm: React.FC = () => {
           <div key={section.id} className={sIdx > 0 ? "mt-16 pt-16 border-t border-white/5" : ""}>
              <div className="mb-10">
                <span className="text-hipixel-accent font-mono text-sm tracking-wider uppercase mb-2 block">Part {sIdx + 1}</span>
-               <h2 className="text-2xl md:text-3xl font-display font-bold mb-2 break-keep text-white">{section.title}</h2>
-               <p className="text-gray-400 text-base md:text-lg break-keep">{section.description}</p>
+               {/* Reduced font size from text-2xl/3xl to text-lg/xl to match question titles */}
+               <h2 className="text-lg md:text-xl font-display font-bold mb-2 break-keep text-white">{section.title}</h2>
+               
+               {/* Conditional rendering for Privacy Consent section description */}
+               {section.id === 'privacy_consent' ? (
+                 <div className="h-48 overflow-y-auto p-4 bg-white/5 rounded-lg border border-white/10 text-sm text-gray-400 leading-relaxed whitespace-pre-line mb-6 shadow-inner">
+                    {section.description}
+                 </div>
+               ) : (
+                 <p className="text-gray-400 text-base md:text-lg break-keep whitespace-pre-line leading-relaxed">{section.description}</p>
+               )}
              </div>
              
              <div className="space-y-12">
@@ -224,6 +233,36 @@ export const SurveyForm: React.FC = () => {
                             />
                         ))}
                         </div>
+                    )}
+
+                    {q.type === QuestionType.CHECKBOX && (
+                       <div className="flex flex-col gap-3">
+                         {q.options?.map(opt => {
+                            const isChecked = formData[q.id] === opt.value;
+                            return (
+                              <label key={opt.value} className="flex items-center gap-3 cursor-pointer group p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
+                                 <div className={`
+                                    w-6 h-6 rounded border flex items-center justify-center transition-all duration-200
+                                    ${isChecked ? 'bg-hipixel-accent border-hipixel-accent' : 'bg-white/5 border-gray-600 group-hover:border-gray-400'}
+                                 `}>
+                                    {isChecked && <Check className="w-4 h-4 text-white" />}
+                                 </div>
+                                 <input 
+                                    type="checkbox" 
+                                    className="hidden"
+                                    checked={isChecked}
+                                    onChange={() => {
+                                        // Toggle logic: if checked, set to empty; if unchecked, set to value
+                                        handleInputChange(q.id, isChecked ? '' : opt.value);
+                                    }}
+                                 />
+                                 <span className={`text-base select-none ${isChecked ? 'text-white font-medium' : 'text-gray-400'}`}>
+                                    {opt.label}
+                                 </span>
+                              </label>
+                            )
+                         })}
+                       </div>
                     )}
                  </div>
                ))}
