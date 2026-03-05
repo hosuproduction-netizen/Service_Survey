@@ -87,7 +87,7 @@ export const SURVEY_SECTIONS: Section[] = [
       {
         id: 'q8_other_opinions',
         type: QuestionType.TEXTAREA,
-        label: "8. 서비스 접수 또는 다른 의견이 있으시면 말씀해 주십시오.",
+        label: "8. 서비스 페이지에 대한 피드백이나 다른 의견이 있으시면 말씀해 주십시오.",
         description: "고객님의 소중한 의견 반영을 위해 최선을 다하겠습니다.",
         placeholder: "서비스 이용 경험에 대한 의견을 자유롭게 작성해주시기 바랍니다.",
         required: false
